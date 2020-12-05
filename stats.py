@@ -12,9 +12,10 @@ class Process:
     # Initialize LCD
     lcd.lcd_clear()
 
-  def run(self, jsonString):
+  def run(self, jsonString, jsonString2):
     # Parse data as json
     data = json.loads( jsonString )
+    data2 = json.loads( jsonString2 )
     # Try to get data from json or return default value
     try:
       rpi_temperature = data['soctemp']
@@ -80,6 +81,23 @@ class Process:
       rpi_cpu_count = data['cpu_count']
     except:
       rpi_cpu_count = "-.--"
+      
+    #Statics
+    
+    try:
+      rpi_sdcard_root_total = data2['sdcard_root_total']
+    except:
+      rpi_sdcard_root_total = "-.--" 
+    
+    try:
+      rpi_swap_total = data['swap_total']
+    except:
+      rpi_swap_total = "-.--" 
+    
+    try:
+      rpi_memory_total = data['memory_total']
+    except:
+      rpi_memory_total = "-.--" 
 
     # Construct string to be displayed on screens
     temperature = "TEMP: %s C" % (float(rpi_temperature)/1000)
@@ -95,25 +113,32 @@ class Process:
     memory_available = "MEM AVAIL: %s MB" % (int(rpi_memory_available))
     cpu_count = "CPU COUNT: %s" % rpi_cpu_count
     localtime = "TIME: %s" % rpi_localtime
+    sdcard_root_total = "SD TOTAL: %s" % rpi_sdcard_root_total
+    swap_tota = "SWAP TOTAL: %s" % rpi_swap_total
+    memory_total = "MEM TOTAL: %s" % rpi_memory_total
     
-    # Uncomment below lines to print in console
-    #os.system("clear")
-    #print " RPi-Monitor "
-    #print
-    #print uptime
-    #print temperature    
-    #print cpu_frequency
-    #print cpu_count
-    #print load1
-    #print load5
-    #print load15
-    #print upgrade    
-    #print sdcard_root_used
-    #print swap_used    
-    #print memory_available
-    #print memory_free
-    #print localtime
-    #print
+    # Comment below lines to not print in console
+    os.system("clear")
+    print " RPi-Monitor "
+    print
+    print uptime
+    print temperature    
+    print cpu_frequency
+    print cpu_count
+    print load1
+    print load5
+    print load15
+    print upgrade    
+    print sdcard_root_used
+    print swap_used    
+    print memory_available
+    print memory_free
+    print localtime
+    print
+    print sdcard_root_total
+    print swap_tota
+    print memory_total
+    print
     
     # Print out on LCD
     lcd.lcd_clear()
@@ -159,24 +184,26 @@ class Client:
         connection.request("GET","/dynamic.json")
         # Get the server response
         response = connection.getresponse()
+        # Initiate a connection to RPi-Monitor embedded server
+        static_connection = httplib.HTTPConnection("192.168.1.61", 8888)
         # Get the file static.json
         static_connection.request("GET","/static.json")
         # Get the server response
         static_response = static_connection.getresponse()
-        if ( response.status == 200) && (static_response.status == 200 ):
+        if ( response.status == 200) & (static_response.status == 200 ):
           # If response is OK, read data
           data = response.read()
           static_data = static_response.read()
           # Run process object on extracted data
-          self.process.run(data)
+          self.process.run(data,static_data)
           # self.process.run(data,static_data)
           
           # Close the connection to RPi-Monitor embedded server
           connection.close()
-        else
+        else:
           #Report an Error
           lcd.lcd_display_string("Connection Error",1)
-          print "Connection Error"
+          #print "Connection Error"
           print
       finally:
         # Clear the LCD

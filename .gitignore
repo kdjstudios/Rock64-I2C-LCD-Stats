@@ -1,0 +1,7 @@
+.vscode/
+__pycache__/
+i2c_lib.py
+i2c_lib.pyc
+lcddriver.py
+lcddriver.pyc
+
