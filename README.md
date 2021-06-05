@@ -34,6 +34,15 @@ Follow the below sections to learn how to setup a I2C 16x2 LCD display on the Ro
 * Rock64 with an OS installed and booted and updated.
 * Installed packages ()
   * RPi-Monitor
+* Following Software also
+> sudo apt-get install python
+> 
+> sudo apt-get install python-pip
+> 
+> sudo apt-get install python-smbus
+> 
+> sudo apt-get install i2c-tools
+
 
 ### Install
 Follow the below instruction to clone this repo and install
@@ -51,6 +60,14 @@ Follow the below instruction to clone this repo and install
 >
 > rm hd44780_i2c.zip
 
+Use the following to find the Address of your LCD
+
+> i2cdetect -y 1
+
+Edit and update the address line in ""; replacing with the address foudn from the above line.
+
+> ADDRESS = 0x3f
+
 ### Start
 Follow the below instruction to start the script
  
@@ -61,7 +78,7 @@ Follow the below instruction to start the script
 ### Setup Auto Run at Boot
 Follow the below instructions to setup a Cronjob to auto start this at boot. Note we will have it on a delay start since we need to wait until RPi-Monitor to also start running too.
 
-@reboot sh /opt/start.sh >/opt/logs/log 2>&1
+@reboot sh /opt/Rock64-I2C-LCD-Stats/start.sh >/opt/logs/log 2>&1
 
 
 # Issues
